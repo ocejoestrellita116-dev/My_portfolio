@@ -1,0 +1,27 @@
+/* Skip Link - Accessibility First
+   Visually hidden until focused, then prominently displayed */
+
+.skipLink {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  z-index: 9999;
+  transform: translateX(-50%);
+  padding: 0.875rem 1.5rem;
+  border-radius: var(--radius-md);
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  box-shadow: var(--shadow-lg);
+  transition: top var(--transition-fast);
+}
+
+.skipLink:focus {
+  top: 1rem;
+  outline: 3px solid var(--accent-primary);
+  outline-offset: 2px;
+}
