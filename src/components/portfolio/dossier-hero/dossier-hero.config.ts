@@ -56,7 +56,7 @@ export const LEGACY_STAGES = {
 } as const;
 
 export type DossierStageId = typeof STAGES[number]["id"];
-export type StageContent = typeof STAGES[number]["content"];
+// Note: StageContent type is exported from dossier-hero.types.ts to avoid duplicate exports
 
 // Parallax depth factors for multi-layer effect (Kamaboko-style)
 export const PARALLAX_FACTORS = {
