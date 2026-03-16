@@ -8,9 +8,14 @@ interface PreloaderProps {
   minimumDuration?: number;
 }
 
+/**
+ * Preloader - Brand handoff
+ * Optimized timing: ~800ms total (down from 2400ms)
+ * Quick brand impression, then get out of the way
+ */
 export function Preloader({ 
   onComplete, 
-  minimumDuration = 2400 
+  minimumDuration = 800 
 }: PreloaderProps) {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState<"loading" | "reveal" | "complete">("loading");
@@ -45,7 +50,7 @@ export function Preloader({
     if (progress === 100 && phase === "loading") {
       const revealDelay = setTimeout(() => {
         setPhase("reveal");
-      }, 300);
+      }, 100); // Reduced from 300ms
       return () => clearTimeout(revealDelay);
     }
   }, [progress, phase]);
@@ -56,7 +61,7 @@ export function Preloader({
       const completeDelay = setTimeout(() => {
         setPhase("complete");
         onComplete?.();
-      }, 1000);
+      }, 400); // Reduced from 1000ms
       return () => clearTimeout(completeDelay);
     }
   }, [phase, onComplete]);
@@ -209,13 +214,13 @@ export function PreloaderProvider({ children }: { children: ReactNode }) {
       {!hasLoaded && (
         <Preloader 
           onComplete={() => setHasLoaded(true)} 
-          minimumDuration={2400}
+          minimumDuration={800}
         />
       )}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: hasLoaded ? 1 : 0 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
       >
         {children}
       </motion.div>
