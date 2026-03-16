@@ -11,9 +11,56 @@ import {
   RIGHT_RAIL_TRANSFORMS,
   EVIDENCE_TRANSFORMS,
   STAGES,
+  PARALLAX_FACTORS,
 } from "./dossier-hero.config";
 import type { HeroOverlayProps, DossierStage } from "./dossier-hero.types";
 import styles from "./hero-overlay.module.css";
+
+/**
+ * Greeting component - Kamaboko-style character-by-character animation
+ * Appears during intro phase with Japanese-inspired staggered reveal
+ */
+function GreetingText({ 
+  text, 
+  isVisible, 
+  textColor 
+}: { 
+  text: string; 
+  isVisible: boolean; 
+  textColor: MotionValue<string>;
+}) {
+  const characters = text.split("");
+  
+  return (
+    <motion.div 
+      className={styles.greetingContainer}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.p className={styles.greetingText} style={{ color: textColor }}>
+        {characters.map((char, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ 
+              opacity: isVisible ? 1 : 0, 
+              y: isVisible ? 0 : 20 
+            }}
+            transition={{ 
+              duration: 0.5, 
+              delay: isVisible ? i * 0.05 : 0,
+              ease: [0.22, 1, 0.36, 1]
+            }}
+            className={styles.greetingChar}
+          >
+            {char === " " ? "\u00A0" : char}
+          </motion.span>
+        ))}
+      </motion.p>
+    </motion.div>
+  );
+}
 
 /**
  * HeroOverlay
@@ -77,6 +124,7 @@ export function HeroOverlay({
             resumeHref={resumeHref}
             contactHref={contactHref}
             stage={stage}
+            email={siteContent.meta.email}
           />
         </div>
 
@@ -111,6 +159,13 @@ interface LeftCopyProps {
   resumeHref: string;
   contactHref: string;
   stage: DossierStage;
+  email?: string;
+}
+
+// Check if current stage should show specific content
+function shouldShowContent(stage: DossierStage, contentKey: keyof typeof STAGES[number]["content"]): boolean {
+  const currentStage = STAGES.find(s => s.id === stage.id);
+  return currentStage?.content?.[contentKey] ?? false;
 }
 
 function LeftCopyContent({
@@ -122,6 +177,7 @@ function LeftCopyContent({
   resumeHref,
   contactHref,
   stage,
+  email,
 }: LeftCopyProps) {
   const transforms = LEFT_COPY_TRANSFORMS;
 
@@ -158,9 +214,20 @@ function LeftCopyContent({
   const hintY = useTransform(progress, [...transforms.scrollHint.y.keys], [...transforms.scrollHint.y.values]);
   const hintOpacity = useTransform(progress, [...transforms.scrollHint.opacity.keys], [...transforms.scrollHint.opacity.values]);
 
+  // Determine content visibility based on current stage
+  const showGreeting = shouldShowContent(stage, "greeting");
+  const showTitle = shouldShowContent(stage, "title") || stage.id === "opening";
+  const showBio = shouldShowContent(stage, "bio") || stage.id === "about";
+  const showSignals = shouldShowContent(stage, "signals") || stage.id === "works";
+
   if (reducedMotion) {
     return (
       <>
+        {showGreeting && (
+          <p className={styles.greetingText} style={{ color: COLORS.midTone }}>
+            Welcome
+          </p>
+        )}
         <p className={styles.eyebrow} style={{ color: COLORS.midTone }}>
           {hero.eyebrow}
         </p>
@@ -180,6 +247,17 @@ function LeftCopyContent({
 
   return (
     <>
+      {/* Greeting - Kamaboko-style intro */}
+      <AnimatePresence mode="wait">
+        {showGreeting && (
+          <GreetingText 
+            text="Welcome" 
+            isVisible={showGreeting} 
+            textColor={textSecondary}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Eyebrow */}
       <motion.p
         className={styles.eyebrow}
@@ -239,6 +317,23 @@ function LeftCopyContent({
           Contact
         </CTAButton>
       </motion.div>
+
+      {/* Email - visible immediately for recruiter scan path */}
+      {email && (
+        <motion.a
+          href={`mailto:${email}`}
+          className={styles.heroEmail}
+          style={{
+            y: ctaY,
+            opacity: ctaOpacity,
+            color: textSecondary,
+          }}
+          whileHover={{ scale: 1.02 }}
+          data-cta-area="true"
+        >
+          {email}
+        </motion.a>
+      )}
 
       {/* Scroll hint - only visible at start */}
       <motion.div

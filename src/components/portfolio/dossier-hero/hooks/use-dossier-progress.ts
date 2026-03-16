@@ -98,6 +98,7 @@ export function useDossierProgress(
       label: currentStage.label,
       thought: currentStage.thought,
       localProgress,
+      content: currentStage.content,
     };
   }, [progressValue]);
 
@@ -130,5 +131,6 @@ export function getStageFromProgress(progressValue: number): DossierStage {
     label: currentStage.label,
     thought: currentStage.thought,
     localProgress,
+    content: currentStage.content,
   };
 }

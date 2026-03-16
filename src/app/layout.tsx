@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
+import { IBM_Plex_Mono, Space_Grotesk, Montserrat } from "next/font/google";
 
 import { SkipLink } from "@/components/portfolio/skip-link";
 import { SmoothScrollProvider } from "@/components/portfolio/smooth-scroll";
@@ -15,6 +15,12 @@ import "./globals.css";
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const montserrat = Montserrat({
+  variable: "--font-display",
+  subsets: ["latin", "cyrillic"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
@@ -90,7 +96,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
       </head>
-      <body className={`${spaceGrotesk.variable} ${plexMono.variable}`} suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} ${montserrat.variable} ${plexMono.variable}`} suppressHydrationWarning>
         <SkipLink />
         <ThemeProvider>
           <LenisProvider>

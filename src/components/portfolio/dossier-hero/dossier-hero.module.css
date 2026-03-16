@@ -178,10 +178,33 @@
 
 @media (max-width: 767px) {
   .scrollTrack {
-    height: 300vh; /* Reduced scroll range on mobile */
+    height: 250vh; /* Reduced scroll range on mobile for faster progression */
   }
   
   .cornerMarks {
     display: none; /* Hide corner marks on mobile */
+  }
+  
+  .stickyWindow {
+    /* Simplified mobile experience */
+    will-change: auto; /* Reduce GPU memory on mobile */
+  }
+  
+  .bookLayer {
+    padding: 0 1rem;
+    /* Center book with simplified layout */
+    align-items: flex-start;
+    padding-top: 20vh;
+  }
+}
+
+/* Tablet optimization */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .scrollTrack {
+    height: 400vh; /* Medium scroll range for tablets */
+  }
+  
+  .bookLayer {
+    padding: 0 1.5rem;
   }
 }

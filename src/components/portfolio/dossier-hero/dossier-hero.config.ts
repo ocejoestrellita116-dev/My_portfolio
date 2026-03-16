@@ -1,18 +1,70 @@
 /**
  * Dossier Hero Configuration
  * Central place for all timing, colors, and thresholds
+ * 
+ * Kamaboko-inspired design: Multi-layer parallax with synchronized
+ * content phases and smooth transitions between stages.
  */
 
-// Stage definitions with scroll ranges
+// Stage definitions with scroll ranges and content phases
+// Each stage controls what content is visible and how it animates
 export const STAGES = [
-  { id: "intro",     range: [0.00, 0.05] as const, label: null,        thought: null },
-  { id: "intake",    range: [0.05, 0.30] as const, label: "INTAKE",    thought: "Every ticket tells a story" },
-  { id: "diagnosis", range: [0.30, 0.55] as const, label: "DIAGNOSIS", thought: "Patterns emerge from noise" },
-  { id: "action",    range: [0.55, 0.80] as const, label: "ACTION",    thought: "Systems replace repetition" },
-  { id: "resolved",  range: [0.80, 1.00] as const, label: "RESOLVED",  thought: "Clarity, documented" },
+  { 
+    id: "intro",     
+    range: [0.00, 0.08] as const, 
+    label: null,        
+    thought: null,
+    content: { greeting: true, title: false, bio: false, signals: false, evidence: false }
+  },
+  { 
+    id: "opening",   
+    range: [0.08, 0.30] as const, 
+    label: "OPENING",   
+    thought: "Every ticket tells a story",
+    content: { greeting: false, title: true, bio: false, signals: false, evidence: false }
+  },
+  { 
+    id: "about",     
+    range: [0.30, 0.55] as const, 
+    label: "ABOUT",     
+    thought: "Patterns emerge from noise",
+    content: { greeting: false, title: false, bio: true, signals: false, evidence: false }
+  },
+  { 
+    id: "works",     
+    range: [0.55, 0.80] as const, 
+    label: "WORKS",     
+    thought: "Systems replace repetition",
+    content: { greeting: false, title: false, bio: false, signals: true, evidence: false }
+  },
+  { 
+    id: "contact",   
+    range: [0.80, 1.00] as const, 
+    label: "CONTACT",   
+    thought: "Clarity, documented",
+    content: { greeting: false, title: false, bio: false, signals: false, evidence: true }
+  },
 ] as const;
 
+// Legacy stage aliases for backward compatibility
+export const LEGACY_STAGES = {
+  intro: "intro",
+  intake: "opening",
+  diagnosis: "about", 
+  action: "works",
+  resolved: "contact",
+} as const;
+
 export type DossierStageId = typeof STAGES[number]["id"];
+export type StageContent = typeof STAGES[number]["content"];
+
+// Parallax depth factors for multi-layer effect (Kamaboko-style)
+export const PARALLAX_FACTORS = {
+  background: 0.2,   // Barely moves
+  book: 1.0,         // Base scroll speed
+  stageLabel: 1.15,  // Slightly ahead
+  headline: 1.4,     // Faster, prominent
+} as const;
 
 // Color palette for background transition
 export const COLORS = {

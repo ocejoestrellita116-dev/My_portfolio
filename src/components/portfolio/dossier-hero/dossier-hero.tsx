@@ -40,10 +40,11 @@ export function DossierHero({
   // Progress and stage from custom hook
   const { progress, progressValue, velocity, velocityValue, stage } = useDossierProgress(containerRef);
   
-  // Pointer tracking for parallax
+  // Pointer tracking for parallax - Kamaboko-style responsive feel
   const { pointer, bind } = usePointerParallax(containerRef, { 
     enabled: isInteractive,
-    smoothing: 0.08,
+    smoothing: 0.06, // More responsive (was 0.08)
+    intensity: 1.2,  // Slightly amplified effect
   });
 
   // Detect device capabilities

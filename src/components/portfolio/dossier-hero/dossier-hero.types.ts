@@ -6,6 +6,15 @@
 import type { MotionValue } from "motion/react";
 import type { DossierStageId } from "./dossier-hero.config";
 
+// Stage content visibility flags
+export interface StageContent {
+  greeting: boolean;
+  title: boolean;
+  bio: boolean;
+  signals: boolean;
+  evidence: boolean;
+}
+
 // Stage information
 export interface DossierStage {
   id: DossierStageId;
@@ -13,6 +22,7 @@ export interface DossierStage {
   label: string | null;
   thought: string | null;
   localProgress: number; // 0-1 within the stage
+  content?: StageContent; // Kamaboko-style content phase visibility
 }
 
 // Pointer position normalized to -1..1
