@@ -412,9 +412,9 @@ function RightRailContent({
   // Pre-compute blur filter to avoid hooks in JSX
   const evidenceFilter = useTransform(evidenceBlur, (b) => `blur(${b}px)`);
 
-  // Get current stage data
-  const showStageContent = stage.id !== "intro" && stage.id !== "resolved";
-  const showEvidence = stage.id === "resolved";
+  // Get current stage data - updated to use new Kamaboko stage names
+  const showStageContent = stage.id !== "intro" && stage.id !== "contact";
+  const showEvidence = stage.id === "contact";
 
   return (
     <>
