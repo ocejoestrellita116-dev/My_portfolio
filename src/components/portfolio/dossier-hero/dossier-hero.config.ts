@@ -1,69 +1,81 @@
 /**
  * Dossier Hero Configuration
- * Central place for all timing, colors, and thresholds
+ * Artifact-driven phase system for premium dossier narrative
  * 
- * Kamaboko-inspired design: Multi-layer parallax with synchronized
- * content phases and smooth transitions between stages.
+ * Phases: closed -> open -> flight -> close -> handoff
+ * First frame is recruiter-readable: identity + role statement + CTA
  */
 
-// Stage definitions with scroll ranges and content phases
-// Each stage controls what content is visible and how it animates
-export const STAGES = [
+import type { PhaseContent } from "./dossier-hero.types";
+
+// Phase definitions with scroll ranges
+// Each phase controls what content is visible and how it animates
+export const PHASES = [
   { 
-    id: "intro",     
+    id: "closed",     
     range: [0.00, 0.08] as const, 
     label: null,        
     thought: null,
-    content: { greeting: true, title: false, bio: false, signals: false, evidence: false }
+    content: { identity: true, positioning: false, proof: false, flagship: false, handoff: false } satisfies PhaseContent
   },
   { 
-    id: "opening",   
+    id: "open",   
     range: [0.08, 0.30] as const, 
-    label: "OPENING",   
+    label: "DOSSIER",   
     thought: "Every ticket tells a story",
-    content: { greeting: false, title: true, bio: false, signals: false, evidence: false }
+    content: { identity: true, positioning: true, proof: false, flagship: false, handoff: false } satisfies PhaseContent
   },
   { 
-    id: "about",     
-    range: [0.30, 0.55] as const, 
-    label: "ABOUT",     
+    id: "flight",     
+    range: [0.30, 0.62] as const, 
+    label: "PROOF",     
     thought: "Patterns emerge from noise",
-    content: { greeting: false, title: false, bio: true, signals: false, evidence: false }
+    content: { identity: false, positioning: false, proof: true, flagship: false, handoff: false } satisfies PhaseContent
   },
   { 
-    id: "works",     
-    range: [0.55, 0.80] as const, 
-    label: "WORKS",     
+    id: "close",     
+    range: [0.62, 0.84] as const, 
+    label: "WORK",     
     thought: "Systems replace repetition",
-    content: { greeting: false, title: false, bio: false, signals: true, evidence: false }
+    content: { identity: false, positioning: false, proof: false, flagship: true, handoff: false } satisfies PhaseContent
   },
   { 
-    id: "contact",   
-    range: [0.80, 1.00] as const, 
-    label: "CONTACT",   
+    id: "handoff",   
+    range: [0.84, 1.00] as const, 
+    label: "CONNECT",   
     thought: "Clarity, documented",
-    content: { greeting: false, title: false, bio: false, signals: false, evidence: true }
+    content: { identity: false, positioning: false, proof: false, flagship: false, handoff: true } satisfies PhaseContent
   },
 ] as const;
 
-// Legacy stage aliases for backward compatibility
-export const LEGACY_STAGES = {
-  intro: "intro",
-  intake: "opening",
-  diagnosis: "about", 
-  action: "works",
-  resolved: "contact",
+export type DossierPhaseId = typeof PHASES[number]["id"];
+
+// Legacy aliases for backward compatibility
+export const STAGES = PHASES;
+export type DossierStageId = DossierPhaseId;
+
+// Flagship teaser crossfade range (starts in flight, full in close)
+export const FLAGSHIP_CROSSFADE = {
+  fadeInStart: 0.55,   // End of flight: begin fade in
+  fadeInEnd: 0.65,     // Start of close: full opacity
+  fadeOutStart: 0.80,  // Near handoff
+  fadeOutEnd: 0.84,    // Handoff begins
 } as const;
 
-export type DossierStageId = typeof STAGES[number]["id"];
-// Note: StageContent type is exported from dossier-hero.types.ts to avoid duplicate exports
+// Proof strip fade range
+export const PROOF_STRIP_FADE = {
+  fadeInStart: 0.30,
+  fadeInEnd: 0.38,
+  fadeOutStart: 0.55,
+  fadeOutEnd: 0.62,
+} as const;
 
-// Parallax depth factors for multi-layer effect (Kamaboko-style)
+// Parallax depth factors for multi-layer effect
 export const PARALLAX_FACTORS = {
-  background: 0.2,   // Barely moves
-  book: 1.0,         // Base scroll speed
-  stageLabel: 1.15,  // Slightly ahead
-  headline: 1.4,     // Faster, prominent
+  background: 0.2,
+  book: 1.0,
+  phaseLabel: 1.15,
+  headline: 1.4,
 } as const;
 
 // Color palette for background transition
@@ -90,9 +102,7 @@ export const COLORS = {
 
 // Background transition keyframes
 export const BG_TRANSITION = {
-  // Progress points
   keys: [0, 0.70, 0.85, 0.95, 1.0],
-  // Corresponding colors
   colors: [
     COLORS.studioWhite,
     COLORS.studioWhite,
@@ -133,39 +143,37 @@ export const TOPBAR_TIMELINE = {
 export const BOOK_CONFIG = {
   videoSrc: "/scroll-sequences/dossier/book-sequence.mp4",
   posterSrc: "/scroll-sequences/dossier/poster.jpg",
-  // Transform ranges
   transforms: {
-    // Start slightly down and small, settle to center
     y: { keys: [0, 0.05, 0.30, 0.80, 1.0], values: [40, 0, 0, 0, 0] },
     scale: { keys: [0, 0.05, 0.30, 0.55, 0.80, 1.0], values: [0.92, 1, 1, 1.03, 1, 0.98] },
     opacity: { keys: [0, 0.03], values: [0.7, 1] },
   },
 } as const;
 
-// Text layer transforms - Left copy (L1 Front - fastest exit)
-export const LEFT_COPY_TRANSFORMS = {
+// Identity block transforms (closed + open phases)
+export const IDENTITY_TRANSFORMS = {
   eyebrow: {
-    y: { keys: [0.00, 0.04, 0.12, 0.20], values: [12, 0, 0, -28] },
-    scale: { keys: [0.00, 0.04, 0.12, 0.20], values: [1, 1, 1, 1.03] },
-    opacity: { keys: [0.00, 0.04, 0.14, 0.20], values: [0, 1, 1, 0] },
-    blur: { keys: [0.00, 0.04, 0.14, 0.20], values: [6, 0, 0, 8] },
+    y: { keys: [0.00, 0.04, 0.20, 0.28], values: [12, 0, 0, -28] },
+    scale: { keys: [0.00, 0.04, 0.20, 0.28], values: [1, 1, 1, 1.03] },
+    opacity: { keys: [0.00, 0.04, 0.22, 0.28], values: [0, 1, 1, 0] },
+    blur: { keys: [0.00, 0.04, 0.22, 0.28], values: [6, 0, 0, 8] },
   },
-  title: {
-    y: { keys: [0.00, 0.05, 0.14, 0.24], values: [48, 0, 0, -84] },
-    scale: { keys: [0.00, 0.05, 0.14, 0.24], values: [0.96, 1, 1, 1.16] },
-    opacity: { keys: [0.00, 0.03, 0.16, 0.24], values: [0, 1, 1, 0] },
-    blur: { keys: [0.00, 0.05, 0.16, 0.24], values: [12, 0, 0, 12] },
+  headline: {
+    y: { keys: [0.00, 0.05, 0.22, 0.30], values: [48, 0, 0, -84] },
+    scale: { keys: [0.00, 0.05, 0.22, 0.30], values: [0.96, 1, 1, 1.16] },
+    opacity: { keys: [0.00, 0.03, 0.24, 0.30], values: [0, 1, 1, 0] },
+    blur: { keys: [0.00, 0.05, 0.24, 0.30], values: [12, 0, 0, 12] },
   },
-  description: {
-    y: { keys: [0.03, 0.08, 0.16, 0.26], values: [24, 0, 0, -44] },
-    scale: { keys: [0.03, 0.16, 0.26], values: [0.98, 1, 1.05] },
-    opacity: { keys: [0.03, 0.08, 0.18, 0.26], values: [0, 1, 1, 0] },
-    blur: { keys: [0.03, 0.08, 0.18, 0.26], values: [8, 0, 0, 10] },
+  roleStatement: {
+    y: { keys: [0.03, 0.08, 0.24, 0.32], values: [24, 0, 0, -44] },
+    scale: { keys: [0.03, 0.24, 0.32], values: [0.98, 1, 1.05] },
+    opacity: { keys: [0.03, 0.08, 0.26, 0.32], values: [0, 1, 1, 0] },
+    blur: { keys: [0.03, 0.08, 0.26, 0.32], values: [8, 0, 0, 10] },
   },
   cta: {
-    y: { keys: [0.05, 0.10, 0.18, 0.28], values: [16, 0, 0, -24] },
-    opacity: { keys: [0.05, 0.10, 0.20, 0.28], values: [0, 1, 1, 0] },
-    scale: { keys: [0.05, 0.10, 0.20, 0.28], values: [1, 1, 1, 1.02] },
+    y: { keys: [0.05, 0.10, 0.26, 0.34], values: [16, 0, 0, -24] },
+    opacity: { keys: [0.05, 0.10, 0.28, 0.34], values: [0, 1, 1, 0] },
+    scale: { keys: [0.05, 0.10, 0.28, 0.34], values: [1, 1, 1, 1.02] },
   },
   scrollHint: {
     y: { keys: [0.03, 0.14], values: [0, -10] },
@@ -173,44 +181,65 @@ export const LEFT_COPY_TRANSFORMS = {
   },
 } as const;
 
-// Right rail transforms (L2 Mid - slower parallax)
-export const RIGHT_RAIL_TRANSFORMS = {
-  // These are calculated per-stage using local progress
-  stageLabel: {
-    // Local progress within stage [0, 1]
-    y: { keys: [0, 0.12, 0.82, 1], values: [18, 0, -34, -54] },
-    x: { keys: [0, 0.12, 0.82, 1], values: [24, 0, 0, -4] },
-    opacity: { keys: [0, 0.12, 0.82, 1], values: [0, 1, 1, 0] },
-    blur: { keys: [0, 0.12, 0.82, 1], values: [10, 0, 0, 8] },
-    scale: { keys: [0, 0.12, 0.82, 1], values: [0.98, 1, 1, 1.04] },
+// Proof strip transforms (flight phase)
+export const PROOF_STRIP_TRANSFORMS = {
+  container: {
+    y: { keys: [0.30, 0.38, 0.55, 0.62], values: [32, 0, 0, -32] },
+    opacity: { keys: [0.30, 0.38, 0.55, 0.62], values: [0, 1, 1, 0] },
+    scale: { keys: [0.30, 0.38, 0.55, 0.62], values: [0.95, 1, 1, 0.95] },
   },
-  thought: {
-    y: { keys: [0, 0.15, 0.80, 1], values: [12, 0, -22, -34] },
-    x: { keys: [0, 0.15, 0.80, 1], values: [16, 0, 0, -2] },
-    opacity: { keys: [0, 0.15, 0.82, 1], values: [0, 1, 1, 0] },
-    blur: { keys: [0, 0.15, 0.82, 1], values: [8, 0, 0, 6] },
-  },
-  progressRail: {
-    y: { keys: [0.05, 1.00], values: [0, -18] },
-    opacity: { keys: [0.05, 0.40, 1.00], values: [0.35, 0.55, 0.75] },
+  metric: {
+    // Staggered entry per item
+    stagger: 0.02,
   },
 } as const;
 
-// Evidence block transforms (L1.75 - late entry)
-export const EVIDENCE_TRANSFORMS = {
-  header: {
-    y: { keys: [0.80, 0.88, 0.96, 1.00], values: [24, 0, 0, -8] },
-    opacity: { keys: [0.80, 0.88, 1.00], values: [0, 1, 1] },
-    blur: { keys: [0.80, 0.88], values: [8, 0] },
-  },
+// Flagship teaser transforms (close phase with soft intro from flight)
+export const FLAGSHIP_TRANSFORMS = {
   container: {
-    y: { keys: [0.82, 0.92, 0.97, 1.00], values: [32, 0, 0, -12] },
-    scale: { keys: [0.82, 0.92], values: [0.92, 1] },
-    opacity: { keys: [0.82, 0.90, 1.00], values: [0, 1, 1] },
-    blur: { keys: [0.82, 0.92], values: [12, 0] },
+    y: { keys: [0.55, 0.65, 0.78, 0.84], values: [48, 0, 0, -24] },
+    opacity: { keys: [0.55, 0.65, 0.78, 0.84], values: [0, 1, 1, 0] },
+    scale: { keys: [0.55, 0.65, 0.78, 0.84], values: [0.92, 1, 1, 0.98] },
+    blur: { keys: [0.55, 0.65, 0.78, 0.84], values: [12, 0, 0, 8] },
   },
-  // Stagger delay for individual items
+} as const;
+
+// Handoff CTAs transforms
+export const HANDOFF_TRANSFORMS = {
+  container: {
+    y: { keys: [0.84, 0.92, 0.98, 1.00], values: [32, 0, 0, -8] },
+    scale: { keys: [0.84, 0.92], values: [0.92, 1] },
+    opacity: { keys: [0.84, 0.90, 1.00], values: [0, 1, 1] },
+    blur: { keys: [0.84, 0.92], values: [12, 0] },
+  },
   itemStagger: 0.03,
+} as const;
+
+// Spatial labels (strictly secondary)
+export const SPATIAL_LABEL_TRANSFORMS = {
+  // Local progress within phase [0, 1]
+  y: { keys: [0, 0.12, 0.82, 1], values: [18, 0, -34, -54] },
+  x: { keys: [0, 0.12, 0.82, 1], values: [24, 0, 0, -4] },
+  opacity: { keys: [0, 0.12, 0.82, 1], values: [0, 0.4, 0.4, 0] }, // Max 0.4 - strictly secondary
+  blur: { keys: [0, 0.12, 0.82, 1], values: [10, 0, 0, 8] },
+  scale: { keys: [0, 0.12, 0.82, 1], values: [0.98, 1, 1, 1.04] },
+} as const;
+
+// Phase label transforms (right rail)
+export const PHASE_LABEL_TRANSFORMS = {
+  y: { keys: [0, 0.12, 0.82, 1], values: [18, 0, -34, -54] },
+  x: { keys: [0, 0.12, 0.82, 1], values: [24, 0, 0, -4] },
+  opacity: { keys: [0, 0.12, 0.82, 1], values: [0, 1, 1, 0] },
+  blur: { keys: [0, 0.12, 0.82, 1], values: [10, 0, 0, 8] },
+  scale: { keys: [0, 0.12, 0.82, 1], values: [0.98, 1, 1, 1.04] },
+} as const;
+
+// Thought text transforms
+export const THOUGHT_TRANSFORMS = {
+  y: { keys: [0, 0.15, 0.80, 1], values: [12, 0, -22, -34] },
+  x: { keys: [0, 0.15, 0.80, 1], values: [16, 0, 0, -2] },
+  opacity: { keys: [0, 0.15, 0.82, 1], values: [0, 1, 1, 0] },
+  blur: { keys: [0, 0.15, 0.82, 1], values: [8, 0, 0, 6] },
 } as const;
 
 // Breakpoint adjustments
@@ -222,6 +251,19 @@ export const BREAKPOINTS = {
 
 // Scale factors for smaller screens
 export const RESPONSIVE_SCALE = {
-  tablet: 0.8, // Multiply all y/x values
-  mobile: 0.5, // Much reduced motion
+  tablet: 0.8,
+  mobile: 0.5,
+} as const;
+
+// Legacy exports for backward compatibility
+export const STAGES_CONFIG = PHASES;
+export const LEFT_COPY_TRANSFORMS = IDENTITY_TRANSFORMS;
+export const EVIDENCE_TRANSFORMS = HANDOFF_TRANSFORMS;
+export const RIGHT_RAIL_TRANSFORMS = {
+  stageLabel: PHASE_LABEL_TRANSFORMS,
+  thought: THOUGHT_TRANSFORMS,
+  progressRail: {
+    y: { keys: [0.05, 1.00], values: [0, -18] },
+    opacity: { keys: [0.05, 0.40, 1.00], values: [0.35, 0.55, 0.75] },
+  },
 } as const;

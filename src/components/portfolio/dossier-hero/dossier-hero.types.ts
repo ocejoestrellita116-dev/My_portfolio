@@ -1,52 +1,45 @@
 /**
  * Dossier Hero Types
- * Shared types for orchestrator and child components
+ * Artifact-driven phase system for premium dossier narrative
  */
 
 import type { MotionValue } from "motion/react";
-import type { DossierStageId } from "./dossier-hero.config";
+import type { DossierPhaseId } from "./dossier-hero.config";
 
-// Stage content visibility flags
-export interface StageContent {
-  greeting: boolean;
-  title: boolean;
-  bio: boolean;
-  signals: boolean;
-  evidence: boolean;
+// Phase content visibility flags
+export interface PhaseContent {
+  identity: boolean;      // Name, role statement, CTA
+  positioning: boolean;   // Expansion text, whispers
+  proof: boolean;         // Metrics strip
+  flagship: boolean;      // Case teaser
+  handoff: boolean;       // Final CTAs
 }
 
-// Stage information
-export interface DossierStage {
-  id: DossierStageId;
+// Phase information
+export interface DossierPhase {
+  id: DossierPhaseId;
   index: number;
   label: string | null;
   thought: string | null;
-  localProgress: number; // 0-1 within the stage
-  content?: StageContent; // Kamaboko-style content phase visibility
+  localProgress: number;  // 0-1 within the phase
+  content: PhaseContent;
 }
 
 // Pointer position normalized to -1..1
 export interface PointerState {
   x: number;
   y: number;
-  isActive: boolean; // Whether pointer is over the hero
+  isActive: boolean;
 }
 
 // Full state passed to child components
 export interface DossierHeroState {
-  // Scroll progress
-  progress: number;        // 0-1 global
-  velocity: number;        // Scroll velocity
-  
-  // Current stage
-  stage: DossierStage;
-  
-  // Device/capability flags
+  progress: number;
+  velocity: number;
+  phase: DossierPhase;
   isDesktop: boolean;
   reducedMotion: boolean;
-  isInteractive: boolean;  // Combined: desktop + !reducedMotion
-  
-  // Pointer for parallax
+  isInteractive: boolean;
   pointer: PointerState;
 }
 
@@ -61,13 +54,13 @@ export interface DossierHeroProps {
   resumeHref?: string;
   contactHref?: string;
   onProgressChange?: (progress: number) => void;
-  onStageChange?: (stage: DossierStage) => void;
+  onPhaseChange?: (phase: DossierPhase) => void;
 }
 
 // Props for BookSequenceCanvas
 export interface BookSequenceCanvasProps {
   progress: number;
-  stage: DossierStage;
+  phase: DossierPhase;
   isInteractive: boolean;
   className?: string;
 }
@@ -77,14 +70,15 @@ export interface DioramaSceneProps {
   progress: number;
   velocity: number;
   pointer: PointerState;
-  stage: DossierStage;
+  phase: DossierPhase;
   className?: string;
 }
 
 // Props for HeroOverlay (text layer)
 export interface HeroOverlayProps {
   progress: MotionValue<number>;
-  stage: DossierStage;
+  progressValue: number;
+  phase: DossierPhase;
   isDesktop: boolean;
   reducedMotion: boolean;
   resumeHref: string;
@@ -95,7 +89,7 @@ export interface HeroOverlayProps {
 // Props for AdaptiveTopbar
 export interface AdaptiveTopbarProps {
   progress: number;
-  stage: DossierStage;
+  phase: DossierPhase;
   className?: string;
 }
 
@@ -120,7 +114,7 @@ export interface UseDossierProgressReturn {
   progressValue: number;
   velocity: MotionValue<number>;
   velocityValue: number;
-  stage: DossierStage;
+  phase: DossierPhase;
 }
 
 export interface UsePointerParallaxReturn {
@@ -130,3 +124,51 @@ export interface UsePointerParallaxReturn {
     onPointerLeave: () => void;
   };
 }
+
+// ============================================
+// Phase Content Types (for dossier-hero.content.ts)
+// ============================================
+
+export interface ProofMetric {
+  value: string;
+  label: string;
+}
+
+export interface FlagshipCase {
+  title: string;
+  outcome: string;
+  context: string;
+  cta: string;
+  href: string;
+}
+
+export interface CTALink {
+  label: string;
+  href: string;
+}
+
+export interface DossierPhaseContent {
+  closed: {
+    eyebrow: string;
+    headline: string;
+    roleStatement: string;
+    cta: CTALink;
+  };
+  open: {
+    expansion: string;
+    whispers: string[];
+  };
+  flight: {
+    proofStrip: ProofMetric[];
+    spatialLabels: string[];
+  };
+  flagship: FlagshipCase;
+  handoff: {
+    ctas: CTALink[];
+  };
+}
+
+// Legacy aliases for backward compatibility
+export type DossierStage = DossierPhase;
+export type DossierStageId = DossierPhaseId;
+export type StageContent = PhaseContent;

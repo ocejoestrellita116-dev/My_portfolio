@@ -1,10 +1,16 @@
 // Re-exports for clean imports
 export { DossierHero } from "./dossier-hero";
 
-// Types - explicit exports to avoid conflicts
+// Types - explicit exports
 export type {
-  StageContent,
-  DossierStage,
+  // Phase types (new)
+  PhaseContent,
+  DossierPhase,
+  DossierPhaseContent,
+  ProofMetric,
+  FlagshipCase,
+  CTALink,
+  // Common types
   PointerState,
   DossierHeroState,
   DossierHeroMotionState,
@@ -17,12 +23,26 @@ export type {
   LayerTransforms,
   UseDossierProgressReturn,
   UsePointerParallaxReturn,
+  // Legacy aliases
+  StageContent,
+  DossierStage,
+  DossierStageId,
 } from "./dossier-hero.types";
 
 // Config - explicit exports
 export {
-  STAGES,
-  LEGACY_STAGES,
+  // Phase system (new)
+  PHASES,
+  FLAGSHIP_CROSSFADE,
+  PROOF_STRIP_FADE,
+  IDENTITY_TRANSFORMS,
+  PROOF_STRIP_TRANSFORMS,
+  FLAGSHIP_TRANSFORMS,
+  HANDOFF_TRANSFORMS,
+  SPATIAL_LABEL_TRANSFORMS,
+  PHASE_LABEL_TRANSFORMS,
+  THOUGHT_TRANSFORMS,
+  // Common config
   PARALLAX_FACTORS,
   COLORS,
   BG_TRANSITION,
@@ -31,14 +51,26 @@ export {
   PIN_HEIGHT_VH,
   TOPBAR_TIMELINE,
   BOOK_CONFIG,
+  BREAKPOINTS,
+  RESPONSIVE_SCALE,
+  // Legacy aliases
+  STAGES,
   LEFT_COPY_TRANSFORMS,
   RIGHT_RAIL_TRANSFORMS,
   EVIDENCE_TRANSFORMS,
-  BREAKPOINTS,
-  RESPONSIVE_SCALE,
 } from "./dossier-hero.config";
-export type { DossierStageId } from "./dossier-hero.config";
+export type { DossierPhaseId } from "./dossier-hero.config";
+
+// Content
+export {
+  DOSSIER_PHASE_CONTENT,
+  IDENTITY_CONTENT,
+  POSITIONING_CONTENT,
+  PROOF_CONTENT,
+  FLAGSHIP_CONTENT,
+  HANDOFF_CONTENT,
+} from "./dossier-hero.content";
 
 // Hooks
-export { useDossierProgress, getStageFromProgress } from "./hooks/use-dossier-progress";
+export { useDossierProgress, getPhaseFromProgress, getStageFromProgress } from "./hooks/use-dossier-progress";
 export { usePointerParallax, createPointerTracker } from "./hooks/use-pointer-parallax";

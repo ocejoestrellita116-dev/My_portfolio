@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { motion, useMotionValue, useTransform } from "motion/react";
 import Link from "next/link";
 import { isInternalRouteHref } from "@/lib/url-utils";
-import { TOPBAR_TIMELINE, STAGES } from "./dossier-hero/dossier-hero.config";
+import { TOPBAR_TIMELINE, PHASES } from "./dossier-hero/dossier-hero.config";
 import styles from "./adaptive-topbar.module.css";
 
 interface NavItem {
@@ -29,7 +29,7 @@ interface AdaptiveTopbarProps {
  */
 export function AdaptiveTopbar({ nav, className = "" }: AdaptiveTopbarProps) {
   const [heroProgress, setHeroProgress] = useState(0);
-  const [currentStage, setCurrentStage] = useState<string>("intro");
+  const [currentPhase, setCurrentPhase] = useState<string>("closed");
   const progress = useMotionValue(0);
 
   // Listen for hero scroll progress
@@ -51,12 +51,12 @@ export function AdaptiveTopbar({ nav, className = "" }: AdaptiveTopbarProps) {
       setHeroProgress(newProgress);
       progress.set(newProgress);
 
-      // Determine current stage
-      const stage = STAGES.find(
-        (s) => newProgress >= s.range[0] && newProgress < s.range[1]
+      // Determine current phase
+      const phase = PHASES.find(
+        (p) => newProgress >= p.range[0] && newProgress < p.range[1]
       );
-      if (stage) {
-        setCurrentStage(stage.id);
+      if (phase) {
+        setCurrentPhase(phase.id);
       }
     };
 
@@ -105,15 +105,15 @@ export function AdaptiveTopbar({ nav, className = "" }: AdaptiveTopbarProps) {
     [1, 0.85, 0.85, 1]
   );
 
-  // Get stage label for indicator
-  const stageLabel = useMemo(() => {
-    const stage = STAGES.find((s) => s.id === currentStage);
-    return stage?.label || "";
-  }, [currentStage]);
+  // Get phase label for indicator
+  const phaseLabel = useMemo(() => {
+    const phase = PHASES.find((p) => p.id === currentPhase);
+    return phase?.label || "";
+  }, [currentPhase]);
 
-  const stageIndex = useMemo(() => {
-    return STAGES.findIndex((s) => s.id === currentStage);
-  }, [currentStage]);
+  const phaseIndex = useMemo(() => {
+    return PHASES.findIndex((p) => p.id === currentPhase);
+  }, [currentPhase]);
 
   return (
     <motion.header
@@ -155,18 +155,18 @@ export function AdaptiveTopbar({ nav, className = "" }: AdaptiveTopbarProps) {
         )}
       </motion.nav>
 
-      {/* Stage indicator - visible only in minimal mode */}
+      {/* Phase indicator - visible only in minimal mode */}
       <motion.div
         className={styles.stageIndicator}
         style={{ opacity: indicatorOpacity }}
         aria-hidden={!isMinimal}
       >
-        {stageLabel && (
+        {phaseLabel && (
           <>
-            <span className={styles.stageLabel}>{stageLabel}</span>
+            <span className={styles.stageLabel}>{phaseLabel}</span>
             <span className={styles.stageDot} />
             <span className={styles.stageCount}>
-              {String(stageIndex).padStart(2, "0")} / {String(STAGES.length - 1).padStart(2, "0")}
+              {String(phaseIndex).padStart(2, "0")} / {String(PHASES.length - 1).padStart(2, "0")}
             </span>
           </>
         )}

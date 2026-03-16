@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useTransform, useMotionValueEvent } from "motion/react";
 import { DioramaScene } from "../diorama-scene";
 import { BookSequenceCanvas } from "./book-sequence-canvas";
@@ -14,19 +14,18 @@ import styles from "./dossier-hero.module.css";
 /**
  * DossierHero - Orchestrator Component
  * 
- * This is the ONLY component that knows about scroll.
- * It coordinates all layers and passes normalized data to children.
+ * Artifact-driven phase system: closed -> open -> flight -> close -> handoff
  * 
  * Layers:
  * - bgLayer: DioramaScene (3D atmosphere)
  * - bookLayer: BookSequenceCanvas (video scrubbing)
- * - overlayLayer: HeroOverlay (text + CTA)
+ * - overlayLayer: HeroOverlay (phase-based text + CTA)
  */
 export function DossierHero({
   resumeHref = "/resume",
   contactHref = "#contact",
   onProgressChange,
-  onStageChange,
+  onPhaseChange,
 }: DossierHeroProps) {
   const containerRef = useRef<HTMLElement>(null);
   
@@ -37,14 +36,14 @@ export function DossierHero({
   // Derived interactive state
   const isInteractive = isDesktop && !reducedMotion;
 
-  // Progress and stage from custom hook
-  const { progress, progressValue, velocity, velocityValue, stage } = useDossierProgress(containerRef);
+  // Progress and phase from custom hook
+  const { progress, progressValue, velocity, velocityValue, phase } = useDossierProgress(containerRef);
   
-  // Pointer tracking for parallax - Kamaboko-style responsive feel
+  // Pointer tracking for parallax
   const { pointer, bind } = usePointerParallax(containerRef, { 
     enabled: isInteractive,
-    smoothing: 0.06, // More responsive (was 0.08)
-    intensity: 1.2,  // Slightly amplified effect
+    smoothing: 0.06,
+    intensity: 1.2,
   });
 
   // Detect device capabilities
@@ -53,13 +52,11 @@ export function DossierHero({
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isNarrow = window.innerWidth < 1024;
       const desktop = !isMobile && !isNarrow;
-      console.log("[v0] Device check:", { isMobile, isNarrow, desktop, width: window.innerWidth });
       setIsDesktop(desktop);
     };
 
     const checkMotion = () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      console.log("[v0] Motion check:", { reducedMotion: reduced });
       setReducedMotion(reduced);
     };
 
@@ -81,15 +78,10 @@ export function DossierHero({
     onProgressChange?.(value);
   });
 
-  // Emit stage changes to parent
+  // Emit phase changes to parent
   useEffect(() => {
-    onStageChange?.(stage);
-  }, [stage, onStageChange]);
-
-  // Debug: log interactive state
-  useEffect(() => {
-    console.log("[v0] DossierHero state:", { isDesktop, reducedMotion, isInteractive });
-  }, [isDesktop, reducedMotion, isInteractive]);
+    onPhaseChange?.(phase);
+  }, [phase, onPhaseChange]);
 
   // Background color transition
   const bgColor = useTransform(
@@ -114,7 +106,6 @@ export function DossierHero({
       className={styles.scrollTrack}
       style={{ 
         height: `${SCROLL_HEIGHT_VH}vh`,
-        // Initial background to prevent flash during hydration
         backgroundColor: COLORS.studioWhite,
       }}
       data-scroll-sequence
@@ -133,7 +124,7 @@ export function DossierHero({
               progress={progressValue}
               velocity={velocityValue}
               pointer={pointer}
-              stageIndex={stage.index}
+              stageIndex={phase.index}
               className="w-full h-full"
             />
           )}
@@ -143,16 +134,17 @@ export function DossierHero({
         <div className={styles.bookLayer}>
           <BookSequenceCanvas
             progress={progressValue}
-            stage={stage}
+            phase={phase}
             isInteractive={isInteractive}
           />
         </div>
 
-        {/* Overlay Layer - Text + CTA */}
+        {/* Overlay Layer - Phase-based Text + CTA */}
         <div className={styles.overlayLayer}>
           <HeroOverlay
             progress={progress}
-            stage={stage}
+            progressValue={progressValue}
+            phase={phase}
             isDesktop={isDesktop}
             reducedMotion={reducedMotion}
             resumeHref={resumeHref}
