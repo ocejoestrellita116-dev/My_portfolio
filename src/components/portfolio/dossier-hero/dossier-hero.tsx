@@ -40,10 +40,11 @@ export function DossierHero({
   // Progress and stage from custom hook
   const { progress, progressValue, velocity, velocityValue, stage } = useDossierProgress(containerRef);
   
-  // Pointer tracking for parallax
+  // Pointer tracking for parallax - Kamaboko-style responsive feel
   const { pointer, bind } = usePointerParallax(containerRef, { 
     enabled: isInteractive,
-    smoothing: 0.08,
+    smoothing: 0.06, // More responsive (was 0.08)
+    intensity: 1.2,  // Slightly amplified effect
   });
 
   // Detect device capabilities
@@ -51,11 +52,15 @@ export function DossierHero({
     const checkDevice = () => {
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isNarrow = window.innerWidth < 1024;
-      setIsDesktop(!isMobile && !isNarrow);
+      const desktop = !isMobile && !isNarrow;
+      console.log("[v0] Device check:", { isMobile, isNarrow, desktop, width: window.innerWidth });
+      setIsDesktop(desktop);
     };
 
     const checkMotion = () => {
-      setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      console.log("[v0] Motion check:", { reducedMotion: reduced });
+      setReducedMotion(reduced);
     };
 
     checkDevice();
@@ -80,6 +85,11 @@ export function DossierHero({
   useEffect(() => {
     onStageChange?.(stage);
   }, [stage, onStageChange]);
+
+  // Debug: log interactive state
+  useEffect(() => {
+    console.log("[v0] DossierHero state:", { isDesktop, reducedMotion, isInteractive });
+  }, [isDesktop, reducedMotion, isInteractive]);
 
   // Background color transition
   const bgColor = useTransform(

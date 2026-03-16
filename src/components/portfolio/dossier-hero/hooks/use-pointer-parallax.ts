@@ -6,12 +6,16 @@ import type { PointerState, UsePointerParallaxReturn } from "../dossier-hero.typ
 /**
  * Custom hook for tracking pointer position normalized to -1..1 range.
  * Used for mouse parallax effects on book and atmosphere layers.
+ * 
+ * Kamaboko-style enhancement: More responsive feel with tuned smoothing
+ * Default smoothing reduced to 0.06 for more responsive cursor tracking.
  */
 export function usePointerParallax(
   containerRef: React.RefObject<HTMLElement | null>,
-  options: { enabled?: boolean; smoothing?: number } = {}
+  options: { enabled?: boolean; smoothing?: number; intensity?: number } = {}
 ): UsePointerParallaxReturn {
-  const { enabled = true, smoothing = 0.1 } = options;
+  // Kamaboko-style: more responsive smoothing (0.06 vs 0.1)
+  const { enabled = true, smoothing = 0.06, intensity = 1.0 } = options;
   
   const [pointer, setPointer] = useState<PointerState>({
     x: 0,
@@ -68,9 +72,9 @@ export function usePointerParallax(
 
     const rect = container.getBoundingClientRect();
     
-    // Normalize to -1..1
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    // Normalize to -1..1 with intensity multiplier
+    const x = (((e.clientX - rect.left) / rect.width) * 2 - 1) * intensity;
+    const y = (((e.clientY - rect.top) / rect.height) * 2 - 1) * intensity;
 
     targetRef.current = { x, y };
     isActiveRef.current = true;

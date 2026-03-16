@@ -1,9 +1,21 @@
 /* ============================================
    Design System Tokens - Cinematic Dark Minimalism
-   Inspired by bokoko33.me
+   Inspired by bokoko33.me + Kamaboko aesthetic
    ============================================ */
 
 :root {
+  /* Kamaboko palette - Primary aesthetic tokens */
+  --kamaboko-cream: #FBF4E4;
+  --kamaboko-cream-light: #FDF9F0;
+  --kamaboko-blush: #EAA1AC;
+  --kamaboko-blush-light: #F0B8C1;
+  --kamaboko-blush-dark: #D68A94;
+  --kamaboko-white: #FFFFFF;
+  --kamaboko-charcoal: #323232;
+  --kamaboko-charcoal-light: #454545;
+  --kamaboko-muted: #6a6a78;
+  --kamaboko-muted-light: #8a8a96;
+  
   /* Core palette - Deep blacks */
   --color-void: #000000;
   --color-night-900: #0a0a0c;
@@ -29,6 +41,11 @@
   --color-accent-primary: #e8e4df;
   --color-accent-glow: #f5f2ed;
   --color-accent-subtle: rgba(232, 228, 223, 0.15);
+  
+  /* Kamaboko-inspired accent alternatives */
+  --accent-blush: var(--kamaboko-blush);
+  --accent-blush-hover: var(--kamaboko-blush-light);
+  --accent-blush-subtle: rgba(234, 161, 172, 0.15);
   
   /* Legacy compatibility */
   --color-warm-50: #fdfbf8;
@@ -57,6 +74,14 @@
   --radius-lg: 1rem;
   --radius-md: 0.5rem;
   --radius-sm: 0.25rem;
+  --radius-hero: 0px; /* Kamaboko-style clean edges for hero */
+  --radius-section: 0px; /* Clean section edges */
+  
+  /* Parallax depth factors - Kamaboko multi-layer effect */
+  --parallax-bg: 0.2;
+  --parallax-book: 1.0;
+  --parallax-stage: 1.15;
+  --parallax-headline: 1.4;
 
   /* Motion tokens - cinematic timing */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -69,6 +94,9 @@
   --transition-slow: 600ms var(--ease-out-expo);
   --transition-slower: 1000ms var(--ease-out-expo);
   --transition-cinematic: 1400ms var(--ease-out-expo);
+  
+  /* Typography - Kamaboko-inspired clean hierarchy */
+  --font-display: var(--font-display, 'Montserrat'), var(--font-sans), system-ui, sans-serif;
 }
 
 /* ============================================

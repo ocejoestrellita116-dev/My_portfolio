@@ -432,20 +432,29 @@
 }
 
 /* ============================================
-   Sections - Enhanced spacing and backgrounds
+   Sections - Kamaboko-style enhanced backgrounds
    ============================================ */
 .section {
+  position: relative;
   margin-top: var(--section-gap);
   padding: clamp(3rem, 6vw, 5rem) 0;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-section, var(--radius-xl));
+  transition: background-color var(--transition-slow);
 }
 
 .section:first-of-type {
   margin-top: clamp(3rem, 5vw, 4.5rem);
 }
 
-/* Alternating section backgrounds for visual rhythm */
-.section:nth-of-type(even) {
+/* Kamaboko-style section background transitions */
+.section:nth-of-type(1) {
+  /* Cases - cream to white */
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-surface) 100%);
+  padding-top: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.section:nth-of-type(2) {
+  /* Builds - white to soft gray */
   background: var(--bg-surface);
   padding-left: clamp(1.5rem, 3vw, 2.5rem);
   padding-right: clamp(1.5rem, 3vw, 2.5rem);
@@ -454,14 +463,23 @@
   border-radius: 0;
 }
 
-/* Section padding variance for visual interest */
-.section:nth-of-type(1) {
-  padding-top: clamp(3.5rem, 7vw, 5.5rem);
-}
-
 .section:nth-of-type(3) {
+  /* Strengths - soft gray to darker */
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-elevated) 100%);
   padding-top: clamp(2.5rem, 5vw, 4rem);
   padding-bottom: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.section:nth-of-type(4) {
+  /* Contact - darker with subtle accent glow */
+  background: 
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(234, 161, 172, 0.08), transparent 50%),
+    var(--bg-elevated);
+  padding-left: clamp(1.5rem, 3vw, 2.5rem);
+  padding-right: clamp(1.5rem, 3vw, 2.5rem);
+  margin-left: calc(var(--page-padding) * -1);
+  margin-right: calc(var(--page-padding) * -1);
+  border-radius: 0;
 }
 
 .sectionHeader {

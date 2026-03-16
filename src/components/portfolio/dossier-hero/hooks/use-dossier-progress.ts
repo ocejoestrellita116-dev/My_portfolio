@@ -43,6 +43,11 @@ export function useDossierProgress(
     const scrolled = -rect.top;
     const newProgress = Math.max(0, Math.min(1, scrolled / scrollRange));
     
+    // Debug: log when progress changes significantly
+    if (Math.abs(newProgress - progress.get()) > 0.01) {
+      console.log("[v0] Progress update:", newProgress.toFixed(3), "scrolled:", scrolled.toFixed(0), "range:", scrollRange.toFixed(0));
+    }
+    
     progress.set(newProgress);
     setProgressValue(newProgress);
   }, [containerRef, progress]);
@@ -98,6 +103,7 @@ export function useDossierProgress(
       label: currentStage.label,
       thought: currentStage.thought,
       localProgress,
+      content: currentStage.content,
     };
   }, [progressValue]);
 
@@ -130,5 +136,6 @@ export function getStageFromProgress(progressValue: number): DossierStage {
     label: currentStage.label,
     thought: currentStage.thought,
     localProgress,
+    content: currentStage.content,
   };
 }

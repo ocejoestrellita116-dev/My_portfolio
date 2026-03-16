@@ -27,6 +27,31 @@
   max-width: 420px;
 }
 
+/* Greeting - Kamaboko-style intro animation */
+.greetingContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.greetingText {
+  font-family: var(--font-display, var(--font-sans));
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+}
+
+.greetingChar {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 0.75rem;
@@ -57,6 +82,23 @@
   gap: 0.75rem;
   margin-top: 0.5rem;
   pointer-events: auto;
+}
+
+/* Email link - visible early for recruiter scan */
+.heroEmail {
+  display: inline-block;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: color var(--transition-base), text-decoration var(--transition-base);
+  pointer-events: auto;
+}
+
+.heroEmail:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .scrollHint {
@@ -233,12 +275,47 @@
   .grid {
     display: flex;
     flex-direction: column;
-    padding: 3rem 1.25rem;
+    padding: 2.5rem 1.25rem;
+    justify-content: flex-start;
+    min-height: auto;
+  }
+  
+  /* Greeting on mobile - centered, simpler */
+  .greetingContainer {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-bottom: 2rem;
+  }
+  
+  .greetingText {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    letter-spacing: 0.15em;
   }
   
   .leftCopy {
     order: 1;
     max-width: none;
+  }
+  
+  .title {
+    font-size: clamp(1.5rem, 6vw, 2.25rem);
+  }
+  
+  .description {
+    font-size: 0.875rem;
+    max-width: none;
+  }
+  
+  .ctaRow {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .ctaRow > * {
+    width: 100%;
+    min-height: 44px; /* Touch target minimum */
   }
   
   .rightRail {
@@ -274,5 +351,9 @@
   
   .evidenceArea {
     display: none; /* Show evidence in different section on mobile */
+  }
+  
+  .scrollHint {
+    display: none; /* Hide scroll hint on mobile */
   }
 }

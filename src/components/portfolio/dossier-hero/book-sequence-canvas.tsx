@@ -9,7 +9,7 @@ import type { BookSequenceCanvasProps } from "./dossier-hero.types";
  * BookSequenceCanvas
  * 
  * Handles the book video scrubbing based on scroll progress.
- * - Desktop: Video with currentTime control
+ * - Desktop: Video with currentTime control (scroll-synced)
  * - Mobile/reduced-motion: Poster or autoplay loop
  * 
  * This component only reads progress - it does NOT know about scroll.
@@ -31,20 +31,26 @@ export function BookSequenceCanvas({
     
     setVideoDuration(video.duration);
     setVideoReady(true);
+    // Pause video - we'll control it via currentTime
+    video.pause();
   }, []);
 
   // Sync video currentTime with progress
+  // This effect runs whenever progress changes
   useEffect(() => {
     if (!isInteractive || !videoReady || videoDuration === 0) return;
     
     const video = videoRef.current;
     if (!video) return;
 
-    // Map progress to video time
+    // Map progress (0-1) to video time
     const targetTime = progress * videoDuration;
     
+    // Debug: log progress changes
+    console.log("[v0] BookSequence progress:", progress.toFixed(3), "-> time:", targetTime.toFixed(2));
+    
     // Only update if difference is significant (avoids jitter)
-    if (Math.abs(video.currentTime - targetTime) > 0.05) {
+    if (Math.abs(video.currentTime - targetTime) > 0.03) {
       video.currentTime = targetTime;
     }
   }, [progress, isInteractive, videoReady, videoDuration]);

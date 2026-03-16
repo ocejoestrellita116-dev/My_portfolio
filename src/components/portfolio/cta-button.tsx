@@ -22,15 +22,16 @@ interface CTAButtonProps {
   onClick?: () => void;
 }
 
+// Kamaboko-inspired hover glow effects
 const variantStyles: Record<CTAVariant, string> = {
   primary:
-    "bg-accent-primary text-white hover:bg-accent-primary-hover shadow-md hover:shadow-lg",
+    "bg-accent-primary text-white hover:bg-accent-primary-hover shadow-md hover:shadow-lg hover:shadow-accent-primary/20 transition-shadow",
   secondary:
-    "bg-accent-secondary text-white hover:bg-accent-secondary-hover shadow-md hover:shadow-lg",
+    "bg-accent-secondary text-white hover:bg-accent-secondary-hover shadow-md hover:shadow-lg hover:shadow-accent-secondary/20 transition-shadow",
   ghost:
-    "text-accent-primary hover:text-accent-primary-hover hover:bg-accent-primary-subtle",
+    "text-accent-primary hover:text-accent-primary-hover hover:bg-accent-primary-subtle border border-transparent hover:border-accent-primary/30",
   outline:
-    "border border-accent-primary text-accent-primary hover:bg-accent-primary-subtle",
+    "border border-accent-primary text-accent-primary hover:bg-accent-primary-subtle hover:shadow-[0_0_20px_rgba(232,228,223,0.15)]",
 };
 
 const sizeStyles: Record<CTASize, string> = {
@@ -84,6 +85,19 @@ export function CTAButton({
 
   const combinedClassName = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
+  // Kamaboko-style hover animation with subtle y-lift
+  const hoverAnimation = {
+    scale: 1.02,
+    y: -2,
+    transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }
+  };
+  
+  const tapAnimation = {
+    scale: 0.98,
+    y: 0,
+    transition: { duration: 0.1, ease: "easeOut" as const }
+  };
+
   if (as === "a" && href) {
     return (
       <motion.a
@@ -91,8 +105,8 @@ export function CTAButton({
         target={target}
         rel={rel}
         className={combinedClassName}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={hoverAnimation}
+        whileTap={tapAnimation}
       >
         <CTAButtonContent isLoading={isLoading} icon={icon} rightIcon={rightIcon}>
           {children}
@@ -105,8 +119,8 @@ export function CTAButton({
     <motion.button
       className={combinedClassName}
       disabled={disabled || isLoading}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={hoverAnimation}
+      whileTap={tapAnimation}
       onClick={onClick}
     >
       <CTAButtonContent isLoading={isLoading} icon={icon} rightIcon={rightIcon}>
