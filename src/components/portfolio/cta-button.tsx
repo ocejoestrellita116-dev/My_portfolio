@@ -89,13 +89,13 @@ export function CTAButton({
   const hoverAnimation = {
     scale: 1.02,
     y: -2,
-    transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+    transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }
   };
   
   const tapAnimation = {
     scale: 0.98,
     y: 0,
-    transition: { duration: 0.1 }
+    transition: { duration: 0.1, ease: "easeOut" as const }
   };
 
   if (as === "a" && href) {
